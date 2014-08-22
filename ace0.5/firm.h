@@ -21,7 +21,9 @@ public:
 	firm (double money);
 	// Закупка сырья
 	double buy(offer& good, double& available, double& spent);
+	double buy_d(offer& good, double& available, double& spent);
 	void buy_raw(map<int, offer> &demand);
+	void buy_consume(map<int, offer> demand);
 	//-----Labor-market-----//
 	vector<int> checkresumes(vector<int> resumes);         //Check income resumes and select appropriate candidates   
 	void hire(int id);                 //Hire final candidates 
@@ -50,6 +52,8 @@ public:
 	void printinfo();
 	// Обучение и изменение основных параметров на базе правил.
 	void learn(vector<vector<double>> rule_price, vector<vector<double>> rule_salary, vector<vector<double>> rule_plan);
+	void learn_raw();
+	void learn_consume();
 	double set(vector<double> state, vector<vector<double>> rule);
 	
 private:
@@ -82,6 +86,9 @@ private:
 	void set_price(int state);
 	void set_salary(int state);
 	void set_workers(int state);
+	// Part of sold
+	double _salary_money;
+	double _raw_money;
 
 };
 

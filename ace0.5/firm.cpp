@@ -22,6 +22,8 @@ firm::firm(void)
 	_money = 0;
 	_profit = 0;
 	_desired_workers = 0;
+	_salary_money = 0;
+	_raw_money = 0;
 }
 
 firm::firm(double money)
@@ -43,6 +45,32 @@ firm::firm(double money)
 	//-----Calculations-----//
 	_money = money;
 	_profit = 0;
+	_desired_workers = 50;
+	_salary_money = 0.5 * _money;
+	_raw_money = 0.5 * _money;
+}
+
+void firm::buy_consume(map<int, offer> demand)
+{
+	_raw = 0;
+	double available = _raw_money, spent = 0;
+	while ((spent < _raw_money) && (demand.size() > 0))
+    {
+        map<int,offer>::iterator j = demand.begin();
+		int rand = get_random(demand);
+		for (int i = 0; i < rand; i++)
+		{
+			j++;
+		}
+        _raw += buy(j->second, available, spent);
+		if ((j->second).get_count() == 0)
+		{
+			demand.erase(j);
+		}//*/
+
+    }
+
+	_bought = spent; 
 }
 
 void firm::buy_raw(map<int, offer> &demand)
@@ -58,7 +86,7 @@ void firm::buy_raw(map<int, offer> &demand)
 		{
 			j++;
 		}
-        _bought += buy(j->second, available, spent);
+        buy(j->second, available, spent);
 		if ((j->second).get_count() == 0)
 		{
 			demand.erase(j);
@@ -68,6 +96,26 @@ void firm::buy_raw(map<int, offer> &demand)
 }
 
 double firm::buy(offer& good, double& available, double& spent)
+{
+	if (good.get_count() * good.get_price() >= available)
+	{
+		spent += available/good.get_price() * available;
+		good.set_count(good.get_count() - available/good.get_price());
+		return available/good.get_price()//*/
+	/*	spent += floor(available/good.get_price()) * available;
+		good.set_count(good.get_count() - floor(available/good.get_price()));	//*/	
+	}
+	else
+	{
+		double count = good.get_count();
+		spent += good.get_count() * good.get_price();
+		available -= good.get_count() * good.get_price();
+		good.set_count(0);
+		return count;
+	}
+}
+
+double firm::buy_d(offer& good, double& available, double& spent)
 {
 	if (good.get_count() >= available)
 	{
@@ -83,15 +131,14 @@ double firm::buy(offer& good, double& available, double& spent)
 		available -= good.get_count();
 		double bought = good.get_count() * good.get_price();
 		good.set_count(0);
-		return bought;
-		
+		return bought;		
 	}
 	return 0;
-}
+}//*/
 
 vector<int> firm::checkresumes(vector<int> resumes)
 {
-   _resume_number = resumes.size();
+	_resume_number = resumes.size();
    vector <int> invite;
    for (int i = 0; i < resumes.size(); i++)
    {
@@ -281,6 +328,33 @@ void firm::write_log(string model_name, int firm_id)
 	fn.str("");
 }
 
+void firm::learn_raw()
+{
+	if (_sold)
+	{
+		_salary_money = 0.8 * _sold * _price;
+	}
+	else
+		if (_money > 0)
+		{
+			_salary_money = 0.5 * _money;
+		}
+}
+
+void firm::learn_consume()
+{
+	if (_sold)
+	{
+		_salary_money = 0.5 * _sold * _price;
+		_raw_money = 0.5 * _sold * _price;
+	}
+	else
+		if (_money > 0)
+		{
+			_salary_money = 0.3 * _money;
+			_raw_money = 0.3 * _money;
+		}
+}
 
 void firm::learn(vector<vector<double>> rules_price, vector<vector<double>> rules_salary, vector<vector<double>> rules_plan)
 {
