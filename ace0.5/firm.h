@@ -21,9 +21,7 @@ public:
 	firm (double money);
 	// Закупка сырья
 	double buy(offer& good, double& available, double& spent);
-	double buy_d(offer& good, double& available, double& spent);
-	void buy_raw(map<int, offer> &demand);
-	void buy_consume(map<int, offer> demand);
+	void buy_consume(map<int, offer> &demand);
 	//-----Labor-market-----//
 	vector<int> checkresumes(vector<int> resumes);         //Check income resumes and select appropriate candidates   
 	void hire(int id);                 //Hire final candidates 
@@ -31,7 +29,7 @@ public:
 	vector<int> fire();				   // Fire extra workers.
 	void fire(int id);
 	//-----Good-market-----//
-	void getsales(int sold);//, int buyers);             //Get money from sales   
+	void getsales(double sold);//, int buyers);             //Get money from sales   
 	//-----Production-----//
 	void produce();
 	void produce_raw();
@@ -39,10 +37,10 @@ public:
 	// Запись информации в лог.
 	void write_log(string model_name, int firm_id);
 	//Доступ к частной информации
-	int getstock();
+	double getstock();
 	double getprice();
 	double getsalary();
-	int getsold();
+	double getsold();
 	int getworkers();
 	vector<int> getworkerids();
 	double getmoney();
@@ -67,7 +65,7 @@ private:
 	double _salary;
 	double _plan;
 	//-----Reaction-----//
-	int _sold;
+	double _sold;
 	vector <int> _workers_ids;
 	int _resume_number;
 	double _raw;
@@ -77,7 +75,7 @@ private:
 	double _money;
 	double _profit;
 	int _desired_workers;
-	int _stock;
+	double _stock;
 	// Rule learning.
 	int get_state_profit();
 	int get_state_sold();

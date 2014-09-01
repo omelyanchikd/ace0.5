@@ -188,7 +188,7 @@ void household::buy(offer& good, double& available, double& spent)
 {
 	if (good.get_count() * good.get_price() >= available)
 	{
-		spent += available/good.get_price() * available;
+		spent += available/good.get_price() * good.get_price();
 		good.set_count(good.get_count() - available/good.get_price());//*/
 	/*	spent += floor(available/good.get_price()) * available;
 		good.set_count(good.get_count() - floor(available/good.get_price()));	//*/	

@@ -120,6 +120,9 @@ void world::step()
 	_households.write_log(_model);
 	_firms_consume.print_info();
 	_firms_raw.print_info();
+	_firms_raw.learn_raw();
+	_firms_consume.learn_consume();
+
 //	_households.print_info();
 //	_firms.learn(_rules_price, _rules_salary, _rules_plan);
 //	_firms_consume.learn(_scenario);

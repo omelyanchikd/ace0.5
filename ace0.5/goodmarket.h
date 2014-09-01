@@ -14,7 +14,7 @@ public:
 
 	void set_supply(map<int, offer> supply);	
 
-	map<int,int> get_sales();
+	map<int,double> get_sales();
 
 	map<int, offer> _demand;
 

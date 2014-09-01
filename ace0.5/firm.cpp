@@ -21,7 +21,7 @@ firm::firm(void)
 	//-----Calculations-----//
 	_money = 0;
 	_profit = 0;
-	_desired_workers = 0;
+	_desired_workers = 10;
 	_salary_money = 0;
 	_raw_money = 0;
 }
@@ -46,15 +46,15 @@ firm::firm(double money)
 	_money = money;
 	_profit = 0;
 	_desired_workers = 50;
-	_salary_money = 0.5 * _money;
-	_raw_money = 0.5 * _money;
+	_salary_money = 500;
+	_raw_money = 300;
 }
 
-void firm::buy_consume(map<int, offer> demand)
+void firm::buy_consume(map<int, offer> &demand)
 {
 	_raw = 0;
 	double available = _raw_money, spent = 0;
-	while ((spent < _raw_money) && (demand.size() > 0))
+	while ((spent < _raw_money) && (demand.size() > 0) && (_raw/(_raw_need * _productivity) <= _workers_ids.size()))
     {
         map<int,offer>::iterator j = demand.begin();
 		int rand = get_random(demand);
@@ -69,41 +69,16 @@ void firm::buy_consume(map<int, offer> demand)
 		}//*/
 
     }
-
 	_bought = spent; 
-}
-
-void firm::buy_raw(map<int, offer> &demand)
-{ 
-	_raw = 0;
-	_bought = 0;
-	double available = _raw_need * _workers_ids.size(), spent = 0;
-	while ((spent < _raw_need * _workers_ids.size()) && (demand.size() > 0))
-    {
-        map<int,offer>::iterator j = demand.begin();
-		int rand = get_random(demand);
-		for (int i = 0; i < rand; i++)
-		{
-			j++;
-		}
-        buy(j->second, available, spent);
-		if ((j->second).get_count() == 0)
-		{
-			demand.erase(j);
-		}
-    }
-	_raw = spent;
 }
 
 double firm::buy(offer& good, double& available, double& spent)
 {
 	if (good.get_count() * good.get_price() >= available)
 	{
-		spent += available/good.get_price() * available;
+		spent += available/good.get_price() * good.get_price();
 		good.set_count(good.get_count() - available/good.get_price());
-		return available/good.get_price()//*/
-	/*	spent += floor(available/good.get_price()) * available;
-		good.set_count(good.get_count() - floor(available/good.get_price()));	//*/	
+		return available/good.get_price();
 	}
 	else
 	{
@@ -114,27 +89,6 @@ double firm::buy(offer& good, double& available, double& spent)
 		return count;
 	}
 }
-
-double firm::buy_d(offer& good, double& available, double& spent)
-{
-	if (good.get_count() >= available)
-	{
-		spent += available;
-		good.set_count(good.get_count() - available);
-		return available * good.get_price();
-	/*	spent += floor(available/good.get_price()) * available;
-		good.set_count(good.get_count() - floor(available/good.get_price()));	//*/	
-	}
-	else
-	{
-		spent += good.get_count();
-		available -= good.get_count();
-		double bought = good.get_count() * good.get_price();
-		good.set_count(0);
-		return bought;		
-	}
-	return 0;
-}//*/
 
 vector<int> firm::checkresumes(vector<int> resumes)
 {
@@ -187,7 +141,7 @@ vector<int> firm::fire()
 	return fired;
 }
 
-void firm::getsales(int sold)//, int buyers)
+void firm::getsales(double sold)//, int buyers)
 {
 	_sold = sold;
 //	_buyers = buyers;
@@ -211,15 +165,18 @@ void firm::produce_consume()
 	{
 		_stock = _productivity * _raw/_raw_need;
 	}
+	if (_workers_ids.size())
+		_price = (_salary * _workers_ids.size()  + _bought) / (_productivity * _workers_ids.size() * (1 + 1/_elasticity)); 
 //	_raw = 0;
 }
 
 void firm::produce_raw()
 {
 	_stock = _productivity * _workers_ids.size();
+	_price = _salary /(_productivity * (1 + 1/_elasticity));
 }
 
-int firm::getstock()
+double firm::getstock()
 {
 	return _stock;
 }
@@ -234,7 +191,7 @@ double firm::getsalary()
 	return _salary;
 }
 
-int firm::getsold()
+double firm::getsold()
 {
 	return _sold;
 }
@@ -339,6 +296,11 @@ void firm::learn_raw()
 		{
 			_salary_money = 0.5 * _money;
 		}
+	if (_sold == _stock)
+		_salary *= 0.9;
+	else
+		_salary *= 1.1;
+	_desired_workers = floor(_salary_money / _salary);
 }
 
 void firm::learn_consume()
@@ -354,6 +316,11 @@ void firm::learn_consume()
 			_salary_money = 0.3 * _money;
 			_raw_money = 0.3 * _money;
 		}
+	if (_sold == _stock)
+		_salary *= 0.9;
+	else
+		_salary *= 1.1;
+	_desired_workers = floor(_salary_money / _salary);
 }
 
 void firm::learn(vector<vector<double>> rules_price, vector<vector<double>> rules_salary, vector<vector<double>> rules_plan)

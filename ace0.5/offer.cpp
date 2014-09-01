@@ -13,12 +13,12 @@ double offer::get_price()
 	return _price;
 }
 
-int offer::get_count()
+double offer::get_count()
 {
 	return _count;
 }
 
-int get_count(int firmid, map<int, offer> good)
+double get_count(int firmid, map<int, offer> good)
 {
 	for (map<int,offer>::iterator i = good.begin(); i != good.end(); ++i)
 	{

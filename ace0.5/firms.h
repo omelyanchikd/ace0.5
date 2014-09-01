@@ -29,9 +29,11 @@ public:
 	void produce_consume();
 	// Рынок товаров.
 	map<int,offer> set_supply();
-	void get_sales(map<int, int> sales);
+	void get_sales(map<int, double> sales);
 	// Обучение.
 	void learn(vector<vector<double>> rule_price, vector<vector<double>> rule_salary, vector<vector<double>> rule_plan);
+	void learn_raw();
+	void learn_consume();
 	// Вывод информации.
 	void print_info();
 	// Хранение информации.

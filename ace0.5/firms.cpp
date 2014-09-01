@@ -92,7 +92,7 @@ void firms::buy_raw(map<int, offer> &demand)
 {
 	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); ++i)
 	{
-			(i->second).buy_raw(demand);			
+			(i->second).buy_consume(demand);			
 	}
 }
 
@@ -182,7 +182,7 @@ map<int, offer> firms::set_supply()
 	return supply;
 }
 
-void firms::get_sales(map<int, int> sales)
+void firms::get_sales(map<int, double> sales)
 {
 	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); ++i)
 	{
@@ -195,6 +195,22 @@ void firms::learn(vector<vector<double>> rules_price, vector<vector<double>> rul
 	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); ++i)
 	{
 		(i->second).learn(rules_price, rules_salary, rules_plan);
+	}
+}
+
+void firms::learn_raw()
+{
+	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); ++i)
+	{
+		(i->second).learn_raw();
+	}
+}
+
+void firms::learn_consume()
+{
+	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); ++i)
+	{
+		(i->second).learn_consume();
 	}
 }
 

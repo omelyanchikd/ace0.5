@@ -11,13 +11,13 @@ void goodmarket::set_supply(map<int, offer> supply)
 	_demand = supply;
 }
 
-map<int, int> goodmarket::get_sales()
+map<int, double> goodmarket::get_sales()
 {
-	map<int, int> sales;
+	map<int, double> sales;
 	for (map<int, offer>::iterator i = _supply.begin(); i != _supply.end(); ++i)
 	{
-		int stock = (i->second).get_count();
-		int unsold = get_count(i->first, _demand);
+		double stock = (i->second).get_count();
+		double unsold = get_count(i->first, _demand);
 		sales[i->first] = stock - unsold;
 	}
 	return sales;
