@@ -37,6 +37,8 @@ public:
 	// Entry & exit of households
 	void die();
 	void birth();
+	// Timelim
+	void step();
 private:
 	map<int, household> _households;
 	int _last_id;

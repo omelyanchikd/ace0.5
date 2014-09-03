@@ -1,5 +1,12 @@
 #include "households.h"
 
+void households::step()
+{
+	for (map<int, household>::iterator i = _households.begin(); i != _households.end(); ++i)
+	{
+		(i->second).step();
+	}
+}
 
 households::households(void)
 {
@@ -76,8 +83,8 @@ void households::get_income()
 	{
 		if ((i->second).is_employed())
 			(i->second).work();
-//		else
-		//	(i->second).gethelp();//*/
+		else
+			(i->second).gethelp();
 	}
 }
 

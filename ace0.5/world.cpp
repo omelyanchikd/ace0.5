@@ -88,6 +88,7 @@ world::world(int firmnumber, int householdnumber, double firmmoney, double house
 
 void world::step()
 {
+	_households.step();
 	_households.die();
 	_households.birth();
 	_households.quit(_firms_consume.fire());

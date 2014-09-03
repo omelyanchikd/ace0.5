@@ -44,6 +44,7 @@ public:
 	void set_fed(int fed);
 	void set_salary(double salary);
 	void printinfo();
+	void step();
 
 
 private:
@@ -56,8 +57,10 @@ private:
 	double _money;
 	double _reservation_wage;
 	double _consumption_budget;
+	double _mean_income;
 	// Entry & exit parameters
 	int _starve;
 	int _fed;
+	int _t;
 };
 
