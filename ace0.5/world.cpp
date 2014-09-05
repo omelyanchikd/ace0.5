@@ -7,8 +7,8 @@ world::world(void)
 
 world::world(int firmnumber, int householdnumber, double firmmoney, double householdmoney, scenario choice, string model_name)
 {
-	_firms_consume = (firms(firmnumber, firmmoney, model_name, 0));
-	_firms_raw = (firms(2, 0, model_name, firmnumber));
+	_firms_consume = (firms(firmnumber, firmmoney, 5, model_name, 0));
+	_firms_raw = (firms(2, 0, 20, model_name, firmnumber));
 	_households = (households(householdnumber, householdmoney, model_name));
 	_rawmarket.clear();
 	_goodmarket.clear();
@@ -21,8 +21,8 @@ world::world(int firmnumber, int householdnumber, double firmmoney, double house
 
 world::world(int firmnumber, int householdnumber, double firmmoney, double householdmoney, scenario choice, string model_name, string rules_price, string rules_salary, string rules_plan)
 {
-	_firms_consume = (firms(firmnumber, firmmoney, model_name, 0));
-	_firms_raw = (firms(2, 0, model_name, firmnumber));
+	_firms_consume = (firms(firmnumber, firmmoney, 5, model_name, 0));
+	_firms_raw = (firms(2, 0, 20, model_name, firmnumber));
 	_households = (households(householdnumber, householdmoney, model_name));
 	_rawmarket.clear();
 	_goodmarket.clear();
@@ -116,8 +116,9 @@ void world::step()
 	_households.buy(_goodmarket._demand);
 	_firms_consume.get_sales(_goodmarket.get_sales());
 	get_statistics();
-	_firms_consume.write_log(_model);
-	_firms_raw.write_log(_model);
+	int households = _households.household_number();
+	_firms_consume.write_log(_model, households);
+//	_firms_raw.write_log(_model);
 	_households.write_log(_model);
 	_firms_consume.print_info();
 	_firms_raw.print_info();

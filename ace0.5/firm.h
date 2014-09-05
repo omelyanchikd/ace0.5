@@ -18,7 +18,8 @@ public:
 
 	//-----Constructor-----//
 	firm(void);
-	firm (double money);
+	firm(double money);
+	firm(double money, double productivity);
 	// Закупка сырья
 	double buy(offer& good, double& available, double& spent);
 	void buy_consume(map<int, offer> &demand);

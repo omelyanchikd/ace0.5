@@ -50,6 +50,30 @@ firm::firm(double money)
 	_raw_money = 300;
 }
 
+firm::firm(double money, double productivity)
+{
+	//-----Exogenous parameters-----//
+	_elasticity = -1.5; 
+	_productivity = productivity;
+	_raw_need = 4;
+	//-----Parameters-----//
+	_salary = 10;
+	_plan = 0;
+	_price = 5;//_salary/_productivity * ( 1 / (1 + 1 / _elasticity));
+	//-----Reaction-----//
+	_sold = 0;
+	_resume_number = 0;
+	_raw = 0;
+//	_buyers = 0;
+	_bought = 0;
+	//-----Calculations-----//
+	_money = money;
+	_profit = 0;
+	_desired_workers = 50;
+	_salary_money = 500;
+	_raw_money = 300;
+}
+
 void firm::buy_consume(map<int, offer> &demand)
 {
 	_raw = 0;

@@ -16,6 +16,7 @@ public:
 	// Конструкторы.
 	firms(void);
 	firms(int n, double money, string model_name, int start);
+	firms(int n, double money, double productivity, string model_name, int start);
 	// Рынок сырья.
 	void buy_raw(map<int, offer> &demand);
 	// Рынок труда.
@@ -37,13 +38,13 @@ public:
 	// Вывод информации.
 	void print_info();
 	// Хранение информации.
-	void write_log(string model_name);
+	void write_log(string model_name, double household_number);
 	// Очистка.
 	void clear();
 	vector<int> get_firm_ids();
 	// Статистика.
 	double production();
-	double consumption();
+	double consumption(double household_number);
 	double average_price();
 	double average_salary();
 	double gdp();

@@ -88,6 +88,89 @@ firms::firms(int n, double money, string model_name, int start)
 	fn.str("");
 }
 
+firms::firms(int n, double money, double productivity, string model_name, int start)
+{
+	for (int i = start; i < n + start; i++)
+	{
+		_firms[i+1] = (firm(money, productivity));
+	}
+	ofstream fout;
+	ostringstream fn;
+	for (int i = start + 1; i < n + start + 1; i++)
+	{
+		fn<<model_name<<"_salary"<<"_firm_"<<i<<".txt";
+		fout.open(fn.str(), ios::trunc);
+		fout<<"";
+		fout.close();
+		fn.str("");
+		fn<<model_name<<"_price"<<"_firm_"<<i<<".txt";
+		fout.open(fn.str(), ios::trunc);
+		fout<<"";
+		fout.close();
+		fn.str("");;
+		fn<<model_name<<"_sold"<<"_firm_"<<i<<".txt";
+		fout.open(fn.str(), ios::trunc);
+		fout<<"";
+		fout.close();
+		fn.str("");
+		fn<<model_name<<"_workers"<<"_firm_"<<i<<".txt";
+		fout.open(fn.str(), ios::trunc);
+		fout<<"";		
+		fout.close();
+		fn.str("");
+		fn<<model_name<<"_money"<<"_firm_"<<i<<".txt";
+		fout.open(fn.str(), ios::trunc);
+		fout<<"";	
+		fout.close();
+		fn.str("");
+		fn<<model_name<<"_profit"<<"_firm_"<<i<<".txt";
+		fout.open(fn.str(), ios::trunc);
+		fout<<"";		
+		fout.close();
+		fn.str("");
+		fn<<model_name<<"_desired"<<"_firm_"<<i<<".txt";
+		fout.open(fn.str(), ios::trunc);
+		fout<<"";		
+		fout.close();
+		fn.str("");
+		fn<<model_name<<"_stock"<<"_firm_"<<i<<".txt";
+		fout.open(fn.str(), ios::trunc);
+		fout<<"";		
+		fout.close();
+		fn.str("");
+	}
+	fn<<model_name<<"_average_price.txt";
+	fout.open(fn.str(), ios::trunc);
+    fout<<"";
+	fout.close();
+	fn.str("");
+	fn<<model_name<<"_average_salary.txt";
+	fout.open(fn.str(), ios::trunc);
+	fout<<"";
+	fout.close();
+	fn.str("");
+	fn<<model_name<<"_gdp.txt";
+	fout.open(fn.str(), ios::trunc);
+	fout<<"";
+	fout.close();
+	fn.str("");
+	fn<<model_name<<"_consumption.txt";
+	fout.open(fn.str(), ios::trunc);
+	fout<<"";
+	fout.close();
+	fn.str("");
+	fn<<model_name<<"_production.txt";
+	fout.open(fn.str(), ios::trunc);
+	fout<<"";
+	fout.close();
+	fn.str("");
+	fn<<model_name<<"_firm_number.txt";
+	fout.open(fn.str(), ios::trunc);
+	fout<<"";
+	fout.close();
+	fn.str("");
+}
+
 void firms::buy_raw(map<int, offer> &demand)
 {
 	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); ++i)
@@ -214,7 +297,7 @@ void firms::learn_consume()
 	}
 }
 
-void firms::write_log(string model_name)
+void firms::write_log(string model_name, double household_number)
 {
 	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); ++i)
 	{
@@ -240,7 +323,7 @@ void firms::write_log(string model_name)
 	fn.str("");
 	fn<<model_name<<"_consumption.txt";
 	fout.open(fn.str(), ios_base::app);
-	fout<<consumption()<<" ";
+	fout<<consumption(household_number)<<" ";
 	fout.close();
 	fn.str("");
 	fn<<model_name<<"_production.txt";
@@ -279,14 +362,14 @@ double firms::production()
 	return sum;
 }
 
-double firms::consumption()
+double firms::consumption(double household_number)
 {
 	double sum = 0;
 	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); ++i)
 	{
 		sum += (i->second).getsold();
 	}
-	return sum;
+	return sum/household_number;
 }
 
 double firms::average_price()
