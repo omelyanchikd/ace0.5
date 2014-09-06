@@ -88,11 +88,11 @@ void households::get_income()
 	}
 }
 
-void households::buy(map<int, offer> &demand)
+void households::buy(map<int, offer> &demand, map<int, offer> &supply)
 {
 	for (map<int, household>::iterator i = _households.begin(); i != _households.end(); ++i)
 	{
-		(i->second).buy_goods(demand);
+		(i->second).buy_goods(demand, supply);
 	}
 }
 
@@ -144,6 +144,16 @@ double households::unemployment()
 int households::household_number()
 {
 	return _households.size();
+}
+
+double households::consumption()
+{
+	double sum = 0;
+	for (map<int, household>::iterator i = _households.begin(); i != _households.end(); ++i)
+	{
+		sum += (i->second).getconsumption();
+	}
+	return sum;
 }
 
 void households::die()

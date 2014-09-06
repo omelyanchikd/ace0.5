@@ -16,12 +16,12 @@ public:
 
 	map<int,double> get_sales();
 
+	map<int, int> get_buyers();
+
 	map<int, offer> _demand;
+	map<int, offer> _supply;
 
 	void clear();
-
-private:
-	map<int, offer> _supply;
 
 };
 

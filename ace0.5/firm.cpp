@@ -16,7 +16,7 @@ firm::firm(void)
 	_sold = 0;
 	_resume_number = 0;
 	_raw = 0;
-//	_buyers = 0;
+	_buyers = 0;
 	_bought = 0;
 	//-----Calculations-----//
 	_money = 0;
@@ -40,7 +40,7 @@ firm::firm(double money)
 	_sold = 0;
 	_resume_number = 0;
 	_raw = 0;
-//	_buyers = 0;
+	_buyers = 0;
 	_bought = 0;
 	//-----Calculations-----//
 	_money = money;
@@ -64,7 +64,7 @@ firm::firm(double money, double productivity)
 	_sold = 0;
 	_resume_number = 0;
 	_raw = 0;
-//	_buyers = 0;
+	_buyers = 0;
 	_bought = 0;
 	//-----Calculations-----//
 	_money = money;
@@ -74,18 +74,21 @@ firm::firm(double money, double productivity)
 	_raw_money = 300;
 }
 
-void firm::buy_consume(map<int, offer> &demand)
+void firm::buy_consume(map<int, offer> &demand, map<int, offer> &supply)
 {
 	_raw = 0;
 	double available = _raw_money, spent = 0;
 	while ((spent < _raw_money) && (demand.size() > 0) && (_raw/(_raw_need * _productivity) <= _workers_ids.size()))
     {
         map<int,offer>::iterator j = demand.begin();
+		map<int, offer>::iterator k = supply.begin();
 		int rand = get_random(demand);
 		for (int i = 0; i < rand; i++)
 		{
 			j++;
+			k++;
 		}
+		(k->second).new_buyer();
         _raw += buy(j->second, available, spent);
 		if ((j->second).get_count() == 0)
 		{
@@ -171,6 +174,11 @@ void firm::getsales(double sold)//, int buyers)
 //	_buyers = buyers;
 	_profit = _price * _sold - _salary * _workers_ids.size() - _bought;
 	_money += _profit;
+}
+
+void firm::get_buyers(int buyers)
+{
+	_buyers = buyers;
 }
 
 void firm::produce()
@@ -309,7 +317,7 @@ void firm::write_log(string model_name, int firm_id)
 	fn.str("");
 }
 
-void firm::learn_raw()
+void firm::learn_raw(int household_number, double consumption, double total)
 {
 	if (_sold)
 	{
@@ -320,14 +328,25 @@ void firm::learn_raw()
 		{
 			_salary_money = 0.5 * _money;
 		}
-	if (_sold == _stock)
+/*	if (_sold == _stock)
 		_salary *= 0.9;
 	else
 		_salary *= 1.1;
-	_desired_workers = floor(_salary_money / _salary);
+	_desired_workers = floor(_salary_money / _salary);//*/
+	if (_sold)
+	{
+		_desired_workers = ((double)consumption/(double)household_number)/(_sold * _price /(double) _buyers) * ((double)_sold/total)/_productivity;
+		_salary = _salary_money / (double)_desired_workers;
+	}
+	else
+	{
+		_salary *= 0,9;
+		_desired_workers = floor(_salary_money / _salary);
+	}
+	_buyers = 0;
 }
 
-void firm::learn_consume()
+void firm::learn_consume(int household_number, double consumption, double total)
 {
 	if (_sold)
 	{
@@ -340,11 +359,22 @@ void firm::learn_consume()
 			_salary_money = 0.3 * _money;
 			_raw_money = 0.3 * _money;
 		}
-	if (_sold == _stock)
+/*	if (_sold == _stock)
 		_salary *= 0.9;
 	else
 		_salary *= 1.1;
-	_desired_workers = floor(_salary_money / _salary);
+	_desired_workers = floor(_salary_money / _salary);//*/
+	if (_sold)
+	{
+		_desired_workers = (consumption/household_number)/(_sold * _price / _buyers) * (_sold/total)/_productivity;
+		_salary = _salary_money / (double)_desired_workers;
+	}
+	else
+	{
+		_salary *= 0,9;
+		_desired_workers = floor(_salary_money / _salary);
+	}
+	_buyers = 0;
 }
 
 void firm::learn(vector<vector<double>> rules_price, vector<vector<double>> rules_salary, vector<vector<double>> rules_plan)

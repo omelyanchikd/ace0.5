@@ -24,7 +24,7 @@ public:
 	// Производство.
 	void get_income();
 	// Рынок товаров.
-	void buy(map<int, offer> &demand);
+	void buy(map<int, offer> &demand, map<int, offer> &supply);
 	// Хранение информации.
 	void write_log(string model_name);
 	// Вывод информации.
@@ -34,6 +34,7 @@ public:
 	// Статистика.
 	double unemployment();
 	int household_number();
+	double consumption();
 	// Entry & exit of households
 	void die();
 	void birth();

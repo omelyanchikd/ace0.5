@@ -18,7 +18,7 @@ public:
 	firms(int n, double money, string model_name, int start);
 	firms(int n, double money, double productivity, string model_name, int start);
 	// Рынок сырья.
-	void buy_raw(map<int, offer> &demand);
+	void buy_raw(map<int, offer> &demand, map<int, offer> &supply);
 	// Рынок труда.
 	map<int, double> set_vacancies();
 	vector<int> fire();
@@ -31,20 +31,21 @@ public:
 	// Рынок товаров.
 	map<int,offer> set_supply();
 	void get_sales(map<int, double> sales);
+	void get_buyers(map<int, int> buyers);
 	// Обучение.
 	void learn(vector<vector<double>> rule_price, vector<vector<double>> rule_salary, vector<vector<double>> rule_plan);
-	void learn_raw();
-	void learn_consume();
+	void learn_raw(int household_number, double consumption, double total);
+	void learn_consume(int household_number, double consumption, double total);
 	// Вывод информации.
 	void print_info();
 	// Хранение информации.
-	void write_log(string model_name, double household_number);
+	void write_log(string model_name);
 	// Очистка.
 	void clear();
 	vector<int> get_firm_ids();
 	// Статистика.
 	double production();
-	double consumption(double household_number);
+	double consumption();
 	double average_price();
 	double average_salary();
 	double gdp();

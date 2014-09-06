@@ -104,18 +104,21 @@ void household::gethelp()
 	_active = true;
 }
 
-void household::buy_goods(map<int, offer> &demand)
+void household::buy_goods(map<int, offer> &demand, map<int, offer> &supply)
 {
     _consumption_budget = consumptionbudget();
 	double available = _consumption_budget, spent = 0;
 	while ((spent < _consumption_budget) && (demand.size() > 0) && (can_buy(available, demand)))
     {
         map<int,offer>::iterator j = demand.begin();
+		map<int,offer>::iterator k = supply.begin();
 		int rand = get_random(demand);
 		for (int i = 0; i < rand; i++)
 		{
 			j++;
+			k++;
 		}
+		(k->second).new_buyer();
         buy(j->second, available, spent);
 		if ((j->second).get_count() == 0)
 		{
@@ -204,7 +207,7 @@ double household::consumptionbudget()
 
 //Покупка товаров, если товар считается бесконечно делимым. В дальнейшем эту процедуру следует переписать так, чтобы товар имел пределы делимости. Например, нельзя купить 0.00000001-ую часть айфона.
 void household::buy(offer& good, double& available, double& spent)
-{
+{	
 	if (good.get_count() * good.get_price() >= available)
 	{
 		spent += available/good.get_price() * good.get_price();

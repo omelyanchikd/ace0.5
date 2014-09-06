@@ -171,11 +171,11 @@ firms::firms(int n, double money, double productivity, string model_name, int st
 	fn.str("");
 }
 
-void firms::buy_raw(map<int, offer> &demand)
+void firms::buy_raw(map<int, offer> &demand, map<int, offer> &supply)
 {
 	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); ++i)
 	{
-			(i->second).buy_consume(demand);			
+			(i->second).buy_consume(demand, supply);			
 	}
 }
 
@@ -273,6 +273,14 @@ void firms::get_sales(map<int, double> sales)
 	}
 }
 
+void firms::get_buyers(map<int, int> buyers)
+{
+	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); ++i)
+	{
+		(i->second).get_buyers(buyers[i->first]);
+	}
+}
+
 void firms::learn(vector<vector<double>> rules_price, vector<vector<double>> rules_salary, vector<vector<double>> rules_plan)
 {
 	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); ++i)
@@ -281,23 +289,23 @@ void firms::learn(vector<vector<double>> rules_price, vector<vector<double>> rul
 	}
 }
 
-void firms::learn_raw()
+void firms::learn_raw(int household_number, double consumption, double total)
 {
 	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); ++i)
 	{
-		(i->second).learn_raw();
+		(i->second).learn_raw(household_number, consumption, total);
 	}
 }
 
-void firms::learn_consume()
+void firms::learn_consume(int household_number, double consumption, double total)
 {
 	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); ++i)
 	{
-		(i->second).learn_consume();
+		(i->second).learn_consume(household_number, consumption, total);
 	}
 }
 
-void firms::write_log(string model_name, double household_number)
+void firms::write_log(string model_name)
 {
 	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); ++i)
 	{
@@ -323,7 +331,7 @@ void firms::write_log(string model_name, double household_number)
 	fn.str("");
 	fn<<model_name<<"_consumption.txt";
 	fout.open(fn.str(), ios_base::app);
-	fout<<consumption(household_number)<<" ";
+	fout<<consumption()<<" ";
 	fout.close();
 	fn.str("");
 	fn<<model_name<<"_production.txt";
@@ -362,14 +370,14 @@ double firms::production()
 	return sum;
 }
 
-double firms::consumption(double household_number)
+double firms::consumption()
 {
 	double sum = 0;
 	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); ++i)
 	{
 		sum += (i->second).getsold();
 	}
-	return sum/household_number;
+	return sum;
 }
 
 double firms::average_price()

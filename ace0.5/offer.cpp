@@ -6,6 +6,19 @@ offer::offer(void)
 {
 	_count = 0;
 	_price = 0;
+	_buyers = 0;
+}
+
+offer::offer(double price, double count)
+{
+	_price = price;
+	_count = count;
+	_buyers = 0;
+}
+
+void offer::new_buyer()
+{
+	_buyers++;
 }
 
 double offer::get_price()
@@ -16,6 +29,11 @@ double offer::get_price()
 double offer::get_count()
 {
 	return _count;
+}
+
+int offer::get_buyers()
+{
+	return _buyers;
 }
 
 double get_count(int firmid, map<int, offer> good)

@@ -30,7 +30,7 @@ public:
 
 	//Активность на рынке товаров
 	double consumptionbudget();
-	void buy_goods(map<int, offer> &demand);
+	void buy_goods(map<int, offer> &demand, map<int,offer> &supply);
 	void buy(offer& good, double& available, double& spent);
 	//Доступ к частной информации
 	bool is_employed();

@@ -15,7 +15,6 @@ world::world(int firmnumber, int householdnumber, double firmmoney, double house
 	_labormarket.clear();
 	_scenario = choice;
 	_model = model_name;
-
 }
 
 
@@ -108,22 +107,24 @@ void world::step()
 	}
 	_firms_raw.produce_raw();
 	_rawmarket.set_supply(_firms_raw.set_supply());
-	_firms_consume.buy_raw(_rawmarket._demand);
+	_firms_consume.buy_raw(_rawmarket._demand, _rawmarket._supply);
 	_firms_raw.get_sales(_rawmarket.get_sales());
+	_firms_raw.get_buyers(_rawmarket.get_buyers());
 	_firms_consume.produce_consume();
 	_households.get_income();
 	_goodmarket.set_supply(_firms_consume.set_supply());
-	_households.buy(_goodmarket._demand);
+	_households.buy(_goodmarket._demand, _goodmarket._supply);
 	_firms_consume.get_sales(_goodmarket.get_sales());
+	_firms_consume.get_buyers(_goodmarket.get_buyers());
 	get_statistics();
 	int households = _households.household_number();
-	_firms_consume.write_log(_model, households);
-//	_firms_raw.write_log(_model);
+	_firms_consume.write_log(_model);
+	_firms_raw.write_log(_model);
 	_households.write_log(_model);
 	_firms_consume.print_info();
 	_firms_raw.print_info();
-	_firms_raw.learn_raw();
-	_firms_consume.learn_consume();
+	_firms_raw.learn_raw(2, _households.consumption(), _firms_raw.consumption());
+	_firms_consume.learn_consume(_households.household_number(), _households.consumption(), _firms_consume.consumption());
 
 //	_households.print_info();
 //	_firms.learn(_rules_price, _rules_salary, _rules_plan);

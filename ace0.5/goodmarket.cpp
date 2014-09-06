@@ -23,6 +23,16 @@ map<int, double> goodmarket::get_sales()
 	return sales;
 }
 
+map<int, int> goodmarket::get_buyers()
+{
+	map<int, int> buyers;
+	for (map<int, offer>::iterator i = _supply.begin(); i != _supply.end(); ++i)
+	{
+		buyers[i->first] = (i->second).get_buyers();
+	}
+	return buyers;
+}
+
 void goodmarket::clear()
 {
 	_supply.clear();
