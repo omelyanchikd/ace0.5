@@ -1,5 +1,9 @@
 #include "firm.h"
 
+void firm::step()
+{
+	_t++;
+}
 
 firm::firm(void)
 {
@@ -50,14 +54,13 @@ firm::firm(double money)
 	_raw_money = 300;
 }
 
-firm::firm(double money, double productivity)
+firm::firm(double money, int desired, double productivity)
 {
 	//-----Exogenous parameters-----//
 	_elasticity = -1.5; 
 	_productivity = productivity;
 	_raw_need = 4;
 	//-----Parameters-----//
-	_salary = 10;
 	_plan = 0;
 	_price = 5;//_salary/_productivity * ( 1 / (1 + 1 / _elasticity));
 	//-----Reaction-----//
@@ -69,9 +72,13 @@ firm::firm(double money, double productivity)
 	//-----Calculations-----//
 	_money = money;
 	_profit = 0;
-	_desired_workers = 50;
-	_salary_money = 500;
-	_raw_money = 300;
+	_desired_workers = desired;
+	_salary_money = 0.3 * _money;
+	_raw_money = 0.3 * _money;
+	_salary = _salary_money/_desired_workers;
+	_price = 2;
+	_sales.clear();
+	_t = 0;
 }
 
 void firm::buy_consume(map<int, offer> &demand, map<int, offer> &supply)
@@ -253,6 +260,16 @@ int firm::getdesired()
 	return _desired_workers;
 }
 
+double firm::get_raw_money()
+{
+	return _raw_money;
+}
+
+double firm::get_bought()
+{
+	return _bought;
+}
+
 void firm::printinfo()
 {
 	cout<<"Price: "<<_price<<endl;
@@ -317,64 +334,70 @@ void firm::write_log(string model_name, int firm_id)
 	fn.str("");
 }
 
-void firm::learn_raw(int household_number, double consumption, double total)
+void firm::learn_raw(int household_number, double consumption, double production, double gdp, double consumed)
 {
-	if (_sold)
+	if ((_sold) && (_profit > 0))
 	{
-		_salary_money = 0.8 * _sold * _price;
+		_salary_money = 0.5 * _profit;
 	}
 	else
-		if (_money > 0)
+		if (_sold)
 		{
-			_salary_money = 0.5 * _money;
+			_salary_money = 0.5 * abs(_profit);
 		}
-/*	if (_sold == _stock)
-		_salary *= 0.9;
-	else
-		_salary *= 1.1;
-	_desired_workers = floor(_salary_money / _salary);//*/
-	if (_sold)
-	{
-		_desired_workers = ((double)consumption/(double)household_number)/(_sold * _price /(double) _buyers) * ((double)_sold/total)/_productivity;
-		_salary = _salary_money / (double)_desired_workers;
-	}
-	else
-	{
-		_salary *= 0,9;
-		_desired_workers = floor(_salary_money / _salary);
-	}
-	_buyers = 0;
-}
-
-void firm::learn_consume(int household_number, double consumption, double total)
-{
-	if (_sold)
-	{
-		_salary_money = 0.5 * _sold * _price;
-		_raw_money = 0.5 * _sold * _price;
-	}
-	else
+		else
 		if (_money > 0)
 		{
 			_salary_money = 0.3 * _money;
-			_raw_money = 0.3 * _money;
 		}
-/*	if (_sold == _stock)
-		_salary *= 0.9;
-	else
-		_salary *= 1.1;
-	_desired_workers = floor(_salary_money / _salary);//*/
-	if (_sold)
+	if (_t >= 3)
 	{
-		_desired_workers = (consumption/household_number)/(_sold * _price / _buyers) * (_sold/total)/_productivity;
-		_salary = _salary_money / (double)_desired_workers;
+		_desired_workers = (0.5 * _sold + 0.5 * sum_sales() / 3)/ _productivity;
+		_sales.erase(_sales.begin());
+		_sales.push_back(_sold);
 	}
 	else
 	{
-		_salary *= 0,9;
-		_desired_workers = floor(_salary_money / _salary);
+		_sales.push_back(_sold);							
 	}
+	if (_desired_workers <= 0)
+		_desired_workers = 1;
+	_salary = _salary_money/_desired_workers;
 	_buyers = 0;
+}
+
+void firm::learn_consume(int household_number, double consumption, double production, double gdp, double consumed)
+{
+	if ((_sold) && (_profit > 0))
+	{
+		_salary_money = 0.3 * _profit;
+		_raw_money = 0.3 * _profit;
+	}
+	else
+		if (_sold)
+		{
+			_salary_money = 0.3 * abs(_profit);
+			_raw_money = 0.3 * abs(_profit);
+		}
+		else
+			if (_money > 0)
+			{
+				_salary_money = 0.2 * _money;
+				_raw_money = 0.2 * _money;
+			}
+	if (_t >= 3)
+	{
+		_desired_workers = (0.5 * _sold + 0.5 * sum_sales() / 3)/ _productivity;
+		_sales.erase(_sales.begin());
+		_sales.push_back(_sold);
+	}
+	else
+	{
+		_sales.push_back(_sold);							
+	}
+	if (_desired_workers <= 0)
+		_desired_workers = 1;
+	_salary = _salary_money/_desired_workers;
 }
 
 void firm::learn(vector<vector<double>> rules_price, vector<vector<double>> rules_salary, vector<vector<double>> rules_plan)
@@ -407,4 +430,23 @@ bool is_in(int val, vector<int> x)
 			return true;
 	}
 	return false;
+}
+
+double firm::pay_tax(double tax)
+{
+	if (_profit > 0)
+	{
+		_money -= tax * _profit;
+		_profit -= tax * _profit;
+		return tax * _profit; 
+	}
+	return 0;
+}
+
+double firm::sum_sales()
+{
+	double sum = 0;
+	for (int i = 0; i < _sales.size(); i++)
+		sum += _sales[i];
+	return sum;
 }

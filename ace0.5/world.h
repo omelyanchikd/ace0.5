@@ -23,7 +23,7 @@ public:
 	world(int firmnuumber, int householdnumber, double firmmoney, double householdmoney, scenario choice, string model_name);
 	world(int firmnuumber, int householdnumber, double firmmoney, double householdmoney, scenario choice, string model_name, string rules_price, string rules_salary, string rules_plan);
 	
-	void step();
+	void step(double tax);
 
 	void printinfo();
 

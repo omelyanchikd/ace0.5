@@ -19,7 +19,7 @@ public:
 	//-----Constructor-----//
 	firm(void);
 	firm(double money);
-	firm(double money, double productivity);
+	firm(double money, int desired, double productivity);
 	// Закупка сырья
 	double buy(offer& good, double& available, double& spent);
 	void buy_consume(map<int, offer> &demand, map<int, offer> &supply);
@@ -48,13 +48,19 @@ public:
 	double getmoney();
 	double getprofit();
 	int getdesired();
+	double get_raw_money();
+	double get_bought();
 	double getaction();
 	void printinfo();
 	// Обучение и изменение основных параметров на базе правил.
 	void learn(vector<vector<double>> rule_price, vector<vector<double>> rule_salary, vector<vector<double>> rule_plan);
-	void learn_raw(int household_number, double consumption, double total);
-	void learn_consume(int household_number, double consumption, double total);
+	void learn_raw(int household_number, double consumption, double production, double gdp, double consumed);
+	void learn_consume(int household_number, double consumption, double production, double gdp, double consumed);
 	double set(vector<double> state, vector<vector<double>> rule);
+	// Налоги
+	double pay_tax(double tax);
+	// Timer
+	void step();
 	
 private:
 	
@@ -89,6 +95,12 @@ private:
 	// Part of sold
 	double _salary_money;
 	double _raw_money;
+	// Learning
+	vector<double> _sales;
+	double sum_sales();
+	// Timer
+	int _t;
+
 
 };
 

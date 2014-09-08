@@ -7,8 +7,8 @@ world::world(void)
 
 world::world(int firmnumber, int householdnumber, double firmmoney, double householdmoney, scenario choice, string model_name)
 {
-	_firms_consume = (firms(firmnumber, firmmoney, 5, model_name, 0));
-	_firms_raw = (firms(2, 0, 20, model_name, firmnumber));
+	_firms_consume = (firms(firmnumber, householdnumber/4, firmmoney, 5, model_name, 0));
+	_firms_raw = (firms(2, householdnumber/4, firmmoney, 20, model_name, firmnumber));
 	_households = (households(householdnumber, householdmoney, model_name));
 	_rawmarket.clear();
 	_goodmarket.clear();
@@ -20,8 +20,8 @@ world::world(int firmnumber, int householdnumber, double firmmoney, double house
 
 world::world(int firmnumber, int householdnumber, double firmmoney, double householdmoney, scenario choice, string model_name, string rules_price, string rules_salary, string rules_plan)
 {
-	_firms_consume = (firms(firmnumber, firmmoney, 5, model_name, 0));
-	_firms_raw = (firms(2, 0, 20, model_name, firmnumber));
+	_firms_consume = (firms(firmnumber, householdnumber/4, firmmoney, 5, model_name, 0));
+	_firms_raw = (firms(2, householdnumber/4, 0, 20, model_name, firmnumber));
 	_households = (households(householdnumber, householdmoney, model_name));
 	_rawmarket.clear();
 	_goodmarket.clear();
@@ -85,10 +85,12 @@ world::world(int firmnumber, int householdnumber, double firmmoney, double house
 	fin.close();
 }
 
-void world::step()
+void world::step(double tax)
 {
 	_households.step();
-	_households.die();
+	_firms_raw.step();
+	_firms_consume.step();
+//	_households.die();
 	_households.birth();
 	_households.quit(_firms_consume.fire());
 	_households.quit(_firms_raw.fire());
@@ -118,13 +120,13 @@ void world::step()
 	_firms_consume.get_buyers(_goodmarket.get_buyers());
 	get_statistics();
 	int households = _households.household_number();
-	_firms_consume.write_log(_model);
-	_firms_raw.write_log(_model);
+	_firms_consume.write_log(_model, tax);
+	_firms_raw.write_log(_model, tax);
 	_households.write_log(_model);
 	_firms_consume.print_info();
 	_firms_raw.print_info();
-	_firms_raw.learn_raw(2, _households.consumption(), _firms_raw.consumption());
-	_firms_consume.learn_consume(_households.household_number(), _households.consumption(), _firms_consume.consumption());
+	_firms_raw.learn_raw(2, _firms_consume.raw_consumption(), _firms_raw.money_consumption(), _firms_raw.gdp(), _firms_consume.bought_raw());
+	_firms_consume.learn_consume(_households.household_number(), _households.consumption(), _firms_consume.money_consumption(), _firms_consume.gdp(), _firms_consume.consumption());
 
 //	_households.print_info();
 //	_firms.learn(_rules_price, _rules_salary, _rules_plan);

@@ -108,7 +108,7 @@ void household::buy_goods(map<int, offer> &demand, map<int, offer> &supply)
 {
     _consumption_budget = consumptionbudget();
 	double available = _consumption_budget, spent = 0;
-	while ((spent < _consumption_budget) && (demand.size() > 0) && (can_buy(available, demand)))
+	while ((spent < _consumption_budget) && (demand.size() > 0)) //&& (can_buy(available, demand)))
     {
         map<int,offer>::iterator j = demand.begin();
 		map<int,offer>::iterator k = supply.begin();
@@ -202,7 +202,7 @@ double household::consumptionbudget()
 	if (income >= _mean_income)
 		return _mean_income;
 	else
-		return (_mean_income - income);
+		return abs(_mean_income - income);
 }
 
 //Покупка товаров, если товар считается бесконечно делимым. В дальнейшем эту процедуру следует переписать так, чтобы товар имел пределы делимости. Например, нельзя купить 0.00000001-ую часть айфона.

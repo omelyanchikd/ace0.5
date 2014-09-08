@@ -1,5 +1,13 @@
 #include "firms.h"
 
+void firms::step()
+{
+	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); i++)
+	{
+		(i->second).step();
+	}
+}
+
 
 firms::firms(void)
 {
@@ -86,13 +94,18 @@ firms::firms(int n, double money, string model_name, int start)
 	fout<<"";
 	fout.close();
 	fn.str("");
+	fn<<model_name<<"_taxes.txt";
+	fout.open(fn.str(), ios::trunc);
+	fout<<"";
+	fout.close();
+	fn.str("");
 }
 
-firms::firms(int n, double money, double productivity, string model_name, int start)
+firms::firms(int n, int desired, double money, double productivity, string model_name, int start)
 {
 	for (int i = start; i < n + start; i++)
 	{
-		_firms[i+1] = (firm(money, productivity));
+		_firms[i+1] = (firm(money, desired, productivity));
 	}
 	ofstream fout;
 	ostringstream fn;
@@ -165,6 +178,11 @@ firms::firms(int n, double money, double productivity, string model_name, int st
 	fout.close();
 	fn.str("");
 	fn<<model_name<<"_firm_number.txt";
+	fout.open(fn.str(), ios::trunc);
+	fout<<"";
+	fout.close();
+	fn.str("");
+	fn<<model_name<<"_taxes.txt";
 	fout.open(fn.str(), ios::trunc);
 	fout<<"";
 	fout.close();
@@ -289,23 +307,23 @@ void firms::learn(vector<vector<double>> rules_price, vector<vector<double>> rul
 	}
 }
 
-void firms::learn_raw(int household_number, double consumption, double total)
+void firms::learn_raw(int household_number, double consumption, double production, double gdp, double consumed)
 {
 	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); ++i)
 	{
-		(i->second).learn_raw(household_number, consumption, total);
+		(i->second).learn_raw(household_number, consumption, production, gdp, consumed);
 	}
 }
 
-void firms::learn_consume(int household_number, double consumption, double total)
+void firms::learn_consume(int household_number, double consumption, double production, double gdp, double consumed)
 {
 	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); ++i)
 	{
-		(i->second).learn_consume(household_number, consumption, total);
+		(i->second).learn_consume(household_number, consumption, production, gdp, consumed);
 	}
 }
 
-void firms::write_log(string model_name)
+void firms::write_log(string model_name, double tax)
 {
 	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); ++i)
 	{
@@ -344,6 +362,11 @@ void firms::write_log(string model_name)
 	fout<<firm_number()<<" ";
 	fout.close();
 	fn.str("");
+	fn<<model_name<<"_taxes.txt";
+	fout.open(fn.str(), ios_base::app);
+	fout<<pay_taxes(tax)<<" ";
+	fout.close();
+	fn.str("");
 }
 
 void firms::clear()
@@ -370,6 +393,16 @@ double firms::production()
 	return sum;
 }
 
+double firms::money_consumption()
+{
+	double sum = 0;
+	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); ++i)
+	{
+		sum += (i->second).getsold() * (i->second).getprice();
+	}
+	return sum;
+}
+
 double firms::consumption()
 {
 	double sum = 0;
@@ -380,6 +413,35 @@ double firms::consumption()
 	return sum;
 }
 
+double firms::raw_consumption()
+{
+	double sum = 0;
+	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); ++i)
+	{
+		sum += (i->second).get_raw_money();
+	}
+	return sum;
+}
+
+double firms::bought_raw()
+{
+	double sum = 0;
+	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); ++i)
+	{
+		sum += (i->second).get_bought();
+	}
+	return sum;
+}
+
+double firms::pay_taxes(double tax)
+{
+	double sum = 0;
+	for (map<int, firm>::iterator i = _firms.begin(); i != _firms.end(); ++i)
+	{
+		sum += (i->second).pay_tax(tax);
+	}
+	return sum;
+}
 double firms::average_price()
 {
 	double sum = 0;
